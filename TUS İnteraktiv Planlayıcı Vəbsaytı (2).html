@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-cü Kurs TUS & Yaşam Planlayıcısı</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              900: '#134e4a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+
+  <!-- TOP HEADER -->
+  <header class="bg-gradient-to-r from-teal-800 via-teal-700 to-slate-900 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-11 h-11 bg-teal-500/25 backdrop-blur rounded-xl flex items-center justify-center border border-teal-400/30">
+          <i class="fa-solid fa-user-doctor text-teal-300 text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">4-cü Kurs TUS & Yaşam Planlayıcısı</h1>
+          <p class="text-xs text-teal-200/80">İnteraktiv Günlük Şəxsi İnkişaf və Tədris Təqvimi</p>
+        </div>
+      </div>
+
+      <!-- Quick Stats / Actions -->
+      <div class="flex items-center gap-3">
+        <div class="bg-white/10 backdrop-blur rounded-lg px-3 py-1.5 text-xs border border-white/10 flex items-center gap-2">
+          <i class="fa-solid fa-moon text-amber-300"></i>
+          <span>Yuxu: <strong>00:00 - 07:15</strong></span>
+        </div>
+        <button onclick="openSettingsModal()" class="w-9 h-9 bg-white/10 hover:bg-white/20 text-white rounded-xl transition border border-white/10 flex items-center justify-center shadow-sm" title="Ayarlar">
+          <i class="fa-solid fa-gear text-sm"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT SIDEBAR: Calendar & Subject Progress -->
+    <aside class="lg:col-span-4 space-y-6">
+      
+      <!-- Date Picker & Quick Navigation -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-bold text-slate-800 flex items-center gap-2 text-sm">
+            <i class="fa-solid fa-calendar-days text-teal-600"></i> Tarix Seçimi
+          </h2>
+          <span id="selected-date-badge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200"></span>
+        </div>
+        
+        <input type="date" id="date-picker" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none text-slate-700 font-medium mb-3 text-sm">
+        
+        <!-- Today Button -->
+        <button onclick="jumpToToday()" class="w-full mb-3 py-2 px-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-calendar-day"></i> Bu Günə Keç
+        </button>
+
+        <!-- Subject Quick Jump Buttons Grid -->
+        <div class="border-t border-slate-100 pt-3">
+          <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Növbəti Dərs Oxusuna Keçid:</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="jumpToNextSubject(rheumatologySchedule)" class="py-1.5 px-2 bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200/80 rounded-lg text-xs font-medium transition flex items-center gap-1.5 truncate">
+              <i class="fa-solid fa-bone text-purple-600 text-xs"></i> Revmatologiya
+            </button>
+            <button onclick="jumpToNextSubject(infectiousSchedule)" class="py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 rounded-lg text-xs font-medium transition flex items-center gap-1.5 truncate">
+              <i class="fa-solid fa-bacteria text-amber-600 text-xs"></i> Yoluxucu
+            </button>
+            <button onclick="jumpToNextSubject(nephrologySchedule)" class="py-1.5 px-2 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200/80 rounded-lg text-xs font-medium transition flex items-center gap-1.5 truncate">
+              <i class="fa-solid fa-disease text-blue-600 text-xs"></i> Nefrologiya
+            </button>
+            <button onclick="jumpToNextSubject(coloproctologySchedule)" class="py-1.5 px-2 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200/80 rounded-lg text-xs font-medium transition flex items-center gap-1.5 truncate">
+              <i class="fa-solid fa-stethoscope text-rose-600 text-xs"></i> Koloproktologiya
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- University Subjects Summary Tracker -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
+        <h2 class="font-bold text-slate-800 flex items-center gap-2 mb-4 text-sm">
+          <i class="fa-solid fa-book-bookmark text-indigo-600"></i> Universitet Fənləri
+        </h2>
+        
+        <div class="space-y-3 text-sm">
+          <!-- Infectious Diseases -->
+          <div class="p-3 bg-amber-50/70 border border-amber-200/60 rounded-xl">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-semibold text-amber-900 flex items-center gap-1.5 text-xs">
+                <i class="fa-solid fa-bacteria text-amber-600"></i> Yoluxucu Xəstəliklər
+              </span>
+              <span class="text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">95 Səh.</span>
+            </div>
+            <p class="text-xs text-amber-800">Hər Çərşənbə oxu (Cümə axşamı dərsinə hazırlıq)</p>
+            <div class="mt-1.5 text-[11px] text-amber-700/90 font-medium">
+              Aktiv proqram: 23 Sen - 28 Oktyabr
+            </div>
+          </div>
+
+          <!-- Rheumatology -->
+          <div class="p-3 bg-purple-50/70 border border-purple-200/60 rounded-xl">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-semibold text-purple-900 flex items-center gap-1.5 text-xs">
+                <i class="fa-solid fa-bone text-purple-600"></i> Revmatologiya
+              </span>
+              <span class="text-[11px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md">88 Səh.</span>
+            </div>
+            <p class="text-xs text-purple-800">Hər Çərşənbə axşamı oxu (Çərşənbə dərsinə hazırlıq)</p>
+            <div class="mt-1.5 text-[11px] text-purple-700/90 font-medium">
+              Aktiv proqram: 22 Sen - 27 Oktyabr
+            </div>
+          </div>
+
+          <!-- Nephrology -->
+          <div class="p-3 bg-blue-50/70 border border-blue-200/60 rounded-xl">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-semibold text-blue-900 flex items-center gap-1.5 text-xs">
+                <i class="fa-solid fa-disease text-blue-600"></i> Nefrologiya
+              </span>
+              <span class="text-[11px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md">313 Slayd</span>
+            </div>
+            <p class="text-xs text-blue-800">Hər Şənbə oxu (Cümə axşamı dərsinə hazırlıq)</p>
+            <div class="mt-1.5 text-[11px] text-blue-700/90 font-medium">
+              Aktiv proqram: 19 Sen - 31 Oktyabr
+            </div>
+          </div>
+
+          <!-- Coloproctology -->
+          <div class="p-3 bg-rose-50/70 border border-rose-200/60 rounded-xl">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-semibold text-rose-900 flex items-center gap-1.5 text-xs">
+                <i class="fa-solid fa-stethoscope text-rose-600"></i> Koloproktologiya
+              </span>
+              <span class="text-[11px] font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-md">116 Səh.</span>
+            </div>
+            <p class="text-xs text-rose-800">Hər Bazar günü oxu (Cümə axşamı dərsinə hazırlıq)</p>
+            <div class="mt-1.5 text-[11px] text-rose-700/90 font-medium">
+              Aktiv proqram: 20 Sen - 25 Oktyabr
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Golden Rules Reminder -->
+      <div class="bg-gradient-to-br from-slate-900 to-teal-900 text-white rounded-2xl p-5 shadow-sm space-y-3">
+        <h3 class="font-bold text-teal-300 flex items-center gap-2 text-sm">
+          <i class="fa-solid fa-lightbulb"></i> Qızıl Qaydalar
+        </h3>
+        <ul class="text-xs space-y-2 text-slate-200 leading-relaxed list-disc list-inside">
+          <li><strong>4-cü Kurs Fokus:</strong> Test həlli yox, ancaq TUS kitablarını anlayaraq oxumaq.</li>
+          <li><strong>Yuxu:</strong> 00:00 – 07:15 rejiminə dəqiq riayət edin.</li>
+          <li><strong>İngilis Dili:</strong> Hər gün dincəlmə vaxtından 1 saat 30 dəqiqə.</li>
+          <li><strong>Çərşənbə axşamı:</strong> Revmatologiya oxusu.</li>
+          <li><strong>Çərşənbə:</strong> Yoluxucu xəstəliklər oxusu.</li>
+          <li><strong>Şənbə:</strong> Nefrologiya slayd oxusu.</li>
+          <li><strong>Bazar:</strong> Koloproktologiya oxusu.</li>
+        </ul>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT CONTENT AREA: Daily Schedule & Checklist -->
+    <section class="lg:col-span-8 space-y-6">
+
+      <!-- Selected Day Banner -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span id="day-badge-type" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700"></span>
+            <span id="gym-status-tag" class="text-xs font-bold px-2.5 py-0.5 rounded-full"></span>
+          </div>
+          <h2 id="day-title" class="text-2xl font-extrabold text-slate-900"></h2>
+          <p id="day-subtitle" class="text-sm text-slate-500 mt-0.5"></p>
+        </div>
+
+        <!-- Progress ring / counter -->
+        <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+          <div class="text-right">
+            <div class="text-xs text-slate-500 font-medium">Günün Tamamlanması</div>
+            <div id="completion-text" class="text-lg font-extrabold text-teal-600">0%</div>
+          </div>
+          <div class="w-12 h-12 relative flex items-center justify-center">
+            <svg class="w-12 h-12 transform -rotate-90">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="4" class="text-slate-200" fill="transparent"/>
+              <circle id="progress-circle" cx="24" cy="24" r="18" stroke="currentColor" stroke-width="4" stroke-dasharray="113" stroke-dashoffset="113" stroke-linecap="round" class="text-teal-500 transition-all duration-500" fill="transparent"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Specific Academic Highlight Notes Container -->
+      <div id="academic-container" class="space-y-3">
+        <!-- Dynamic Academic Cards -->
+      </div>
+
+      <!-- Time Blocks Checklist -->
+      <div id="tasks-container" class="space-y-4">
+        <!-- Javascript will dynamically render time blocks here -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4">
+      TUS & Universitet Şəxsi Hazırlıq Sistemi &bull; Məlumatlar sizin brauzerinizdə təhlükəsiz şəkildə saxlanılır.
+    </div>
+  </footer>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settings-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <h3 class="font-bold text-slate-800 flex items-center gap-2 text-base">
+          <i class="fa-solid fa-gear text-teal-600"></i> Sistem Ayarları
+        </h3>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 transition p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="py-5 space-y-4">
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-600 space-y-1">
+          <p class="font-semibold text-slate-700">Məlumat Təhlükəsizliyi</p>
+          <p>İşarələdiyiniz bütün tapşırıqlar brauzerinizin yerli yaddaşında (localStorage) avtomatik saxlanılır.</p>
+        </div>
+
+        <!-- Backup & Restore Options -->
+        <div class="border-t border-slate-100 pt-3 space-y-2">
+          <p class="text-xs font-semibold text-slate-700">Ehtiyat Nüsxə (Backup)</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="exportBackup()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-3 rounded-xl border border-slate-200 transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-download text-teal-600"></i> Nüsxə Göstər
+            </button>
+            <button onclick="importBackup()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-3 rounded-xl border border-slate-200 transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-upload text-indigo-600"></i> Nüsxə Bərpa Et
+            </button>
+          </div>
+          <div id="backup-code-area" class="hidden mt-2">
+            <textarea id="backup-text-input" rows="3" class="w-full text-[10px] font-mono p-2 border border-slate-300 rounded-lg focus:outline-none" placeholder="Bura nüsxə kodunu yapışdırın..."></textarea>
+            <button onclick="applyImport()" class="w-full mt-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 rounded-lg transition">
+              Kodu Bərpa Et
+            </button>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 pt-3">
+          <p class="text-xs font-semibold text-slate-700 mb-1">Tərəqqini Sıfırlamaq</p>
+          <p class="text-xs text-slate-500 mb-3">İşarələdiyiniz bütün tapşırıqları və faizləri tamamilə ilkin vəziyyətə qaytarır.</p>
+          
+          <!-- Initial Button -->
+          <div id="reset-initial-btn">
+            <button onclick="showResetConfirm()" class="w-full text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-2.5 px-4 rounded-xl border border-red-200 transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-rotate-right"></i> Bütün Məlumatları Sıfırla
+            </button>
+          </div>
+
+          <!-- Confirmation Box -->
+          <div id="reset-confirm-box" class="hidden bg-red-50/90 border border-red-200 rounded-xl p-3 space-y-2">
+            <p class="text-xs font-bold text-red-900 flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation text-red-600"></i> Sıfırlamaq istədiyinizdən əminsiniz?
+            </p>
+            <p class="text-[11px] text-red-700 leading-tight">Bütün günlərdə işarələdiyiniz tapşırıqlar silinəcək və bu əməliyyatı geri qaytarmaq mümkün olmayacaq.</p>
+            <div class="flex gap-2 pt-1">
+              <button onclick="resetData()" class="flex-1 text-xs bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition">
+                Bəli, Sıfırla
+              </button>
+              <button onclick="cancelResetConfirm()" class="flex-1 text-xs bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-lg border border-slate-300 transition">
+                Ləğv Et
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="pt-3 border-t border-slate-100 text-right">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">
+          Bağla
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Infectious diseases timeline (Wednesdays for Thursday class)
+    const infectiousSchedule = {
+      "2026-09-23": { pages: 23, note: "24 Sentyabr dərsi üçün" },
+      "2026-09-30": { pages: 10, note: "1 Oktyabr dərsi üçün" },
+      "2026-10-07": { pages: 10, note: "8 Oktyabr dərsi üçün" },
+      "2026-10-14": { pages: 16, note: "15 Oktyabr dərsi üçün" },
+      "2026-10-21": { pages: 13, note: "22 Oktyabr dərsi üçün" },
+      "2026-10-28": { pages: 14, note: "29 Oktyabr dərsi üçün" },
+    };
+
+    // Rheumatology timeline (Tuesdays for Wednesday class)
+    const rheumatologySchedule = {
+      "2026-09-22": { pages: 23, note: "23 Sentyabr dərsi üçün" },
+      "2026-09-29": { pages: 10, note: "30 Sentyabr dərsi üçün" },
+      "2026-10-06": { pages: 5, note: "7 Oktyabr dərsi üçün" },
+      "2026-10-13": { pages: 15, note: "14 Oktyabr dərsi üçün" },
+      "2026-10-20": { pages: 15, note: "21 Oktyabr dərsi üçün" },
+      "2026-10-27": { pages: 5, note: "28 Oktyabr dərsi üçün" },
+    };
+
+    // Nephrology timeline (Saturdays for Thursday class)
+    const nephrologySchedule = {
+      "2026-09-19": { slides: 41, note: "Keçdi (17 Sentyabr)" },
+      "2026-09-26": { slides: 80, note: "1 Oktyabr dərsi üçün" },
+      "2026-10-03": { slides: 49, note: "8 Oktyabr dərsi üçün" },
+      "2026-10-10": { slides: 33, note: "15 Oktyabr dərsi üçün" },
+      "2026-10-17": { slides: 27, note: "22 Oktyabr dərsi üçün" },
+      "2026-10-24": { slides: 52, note: "29 Oktyabr dərsi üçün" },
+      "2026-10-31": { slides: 31, note: "5 Noyabr dərsi üçün" },
+    };
+
+    // Coloproctology timeline (Sundays for Thursday class)
+    const coloproctologySchedule = {
+      "2026-09-20": { pages: 34, note: "24 Sentyabr dərsi üçün" },
+      "2026-09-27": { pages: 13, note: "1 Oktyabr dərsi üçün" },
+      "2026-10-04": { pages: 13, note: "8 Oktyabr dərsi üçün" },
+      "2026-10-11": { pages: 9, note: "15 Oktyabr dərsi üçün" },
+      "2026-10-18": { pages: 12, note: "22 Oktyabr dərsi üçün" },
+      "2026-10-25": { pages: 17, note: "29 Oktyabr dərsi üçün" },
+    };
+
+    // State
+    let selectedDateStr = "";
+    let userTasksState = JSON.parse(localStorage.getItem('tus_tasks_state') || '{}');
+
+    // DOM Elements
+    const datePicker = document.getElementById('date-picker');
+    const selectedDateBadge = document.getElementById('selected-date-badge');
+    const dayTitle = document.getElementById('day-title');
+    const daySubtitle = document.getElementById('day-subtitle');
+    const dayBadgeType = document.getElementById('day-badge-type');
+    const gymStatusTag = document.getElementById('gym-status-tag');
+    const tasksContainer = document.getElementById('tasks-container');
+    const completionText = document.getElementById('completion-text');
+    const progressCircle = document.getElementById('progress-circle');
+    const academicContainer = document.getElementById('academic-container');
+
+    // Gym Day Calculator (Starting Oct 1, 2026 alternating)
+    function isGymDay(dateObj) {
+      const startDate = new Date('2026-10-01T00:00:00');
+      if (dateObj < startDate) return false;
+      
+      const diffTime = dateObj.getTime() - startDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
+      return (diffDays % 2 === 0);
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      selectedDateStr = formatDate(today);
+      datePicker.value = selectedDateStr;
+
+      datePicker.addEventListener('change', (e) => {
+        if (e.target.value) {
+          selectedDateStr = e.target.value;
+          renderDay();
+        }
+      });
+
+      renderDay();
+    });
+
+    function formatDate(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function jumpToToday() {
+      const today = new Date();
+      selectedDateStr = formatDate(today);
+      datePicker.value = selectedDateStr;
+      renderDay();
+    }
+
+    function jumpToNextSubject(scheduleObj) {
+      const dates = Object.keys(scheduleObj).sort();
+      let target = dates.find(d => d >= selectedDateStr) || dates[0];
+      selectedDateStr = target;
+      datePicker.value = selectedDateStr;
+      renderDay();
+    }
+
+    function openSettingsModal() {
+      cancelResetConfirm();
+      document.getElementById('settings-modal').classList.remove('hidden');
+    }
+
+    function closeSettingsModal() {
+      cancelResetConfirm();
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+
+    function showResetConfirm() {
+      document.getElementById('reset-initial-btn').classList.add('hidden');
+      document.getElementById('reset-confirm-box').classList.remove('hidden');
+    }
+
+    function cancelResetConfirm() {
+      document.getElementById('reset-initial-btn').classList.remove('hidden');
+      document.getElementById('reset-confirm-box').classList.add('hidden');
+    }
+
+    function resetData() {
+      userTasksState = {};
+      localStorage.removeItem('tus_tasks_state');
+      closeSettingsModal();
+      renderDay();
+    }
+
+    function exportBackup() {
+      const dataStr = JSON.stringify(userTasksState);
+      const backupArea = document.getElementById('backup-code-area');
+      const backupInput = document.getElementById('backup-text-input');
+      backupArea.classList.remove('hidden');
+      backupInput.value = dataStr;
+      backupInput.select();
+    }
+
+    function importBackup() {
+      const backupArea = document.getElementById('backup-code-area');
+      const backupInput = document.getElementById('backup-text-input');
+      backupArea.classList.remove('hidden');
+      backupInput.value = "";
+      backupInput.placeholder = "Əvvəl kopyaladığınız nüsxə kodunu bura yapışdırın...";
+      backupInput.focus();
+    }
+
+    function applyImport() {
+      const backupInput = document.getElementById('backup-text-input');
+      try {
+        if (!backupInput.value.trim()) return;
+        const parsed = JSON.parse(backupInput.value.trim());
+        if (typeof parsed === 'object') {
+          userTasksState = parsed;
+          localStorage.setItem('tus_tasks_state', JSON.stringify(userTasksState));
+          closeSettingsModal();
+          renderDay();
+        }
+      } catch (e) {}
+    }
+
+    function toggleTask(taskId) {
+      userTasksState[taskId] = !userTasksState[taskId];
+      localStorage.setItem('tus_tasks_state', JSON.stringify(userTasksState));
+      renderDay();
+    }
+
+    function renderDay() {
+      const dateParts = selectedDateStr.split('-');
+      const year = parseInt(dateParts[0]);
+      const month = parseInt(dateParts[1]) - 1;
+      const day = parseInt(dateParts[2]);
+      const currDate = new Date(year, month, day);
+
+      const dayOfWeek = currDate.getDay();
+      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+      const monthNamesAz = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "İyun", "İyul", "Avqust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr"];
+      const dayNamesAz = ["Bazar", "Bazar ertəsi", "Çərşənbə axşamı", "Çərşənbə", "Cümə axşamı", "Cümə", "Şənbə"];
+
+      const dateFormattedDisplay = `${day} ${monthNamesAz[month]} ${year}`;
+      selectedDateBadge.textContent = dateFormattedDisplay;
+      dayTitle.textContent = `${dateFormattedDisplay}, ${dayNamesAz[dayOfWeek]}`;
+
+      // Gym Status
+      const hasGym = isGymDay(currDate);
+      if (currDate < new Date('2026-10-01T00:00:00')) {
+        gymStatusTag.textContent = "İdman: Oktyabrın 1-dən başlayır";
+        gymStatusTag.className = "text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600";
+      } else if (hasGym) {
+        gymStatusTag.textContent = "🏋️‍♂️ İdman Günü (2 Saat)";
+        gymStatusTag.className = "text-xs font-bold px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200";
+      } else {
+        gymStatusTag.textContent = "⚪ İdmansız Gün (İstirahət)";
+        gymStatusTag.className = "text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200";
+      }
+
+      // Day Type Badge
+      if (isWeekend) {
+        dayBadgeType.textContent = "Həftə Sonu";
+        dayBadgeType.className = "text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200";
+        daySubtitle.textContent = "Evdə tam sərbəst vaxt — İngilis dili və TUS oxusu günü.";
+      } else {
+        dayBadgeType.textContent = "Həftə İçi";
+        dayBadgeType.className = "text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200";
+        daySubtitle.textContent = "08:00 - 16:00 Universitet / Staj vaxtı.";
+      }
+
+      // Check for subject reading requirements
+      let activeAcademicNotes = [];
+      let eveningStudyTasksList = [];
+
+      if (infectiousSchedule[selectedDateStr]) {
+        const item = infectiousSchedule[selectedDateStr];
+        activeAcademicNotes.push({
+          icon: "fa-bacteria",
+          colorClass: "amber",
+          title: `🦠 Yoluxucu Xəstəliklər Dərsi Hazırlığı (${item.pages} Səhifə)`,
+          desc: `Sabahkı dərs üçün bu axşam xüsusi olaraq Yoluxucu xəstəliklər fənnindən ${item.pages} səhifə oxumalısınız. (${item.note})`
+        });
+        eveningStudyTasksList.push(`Yoluxucu Xəstəliklər (${item.pages} səhifə oxu)`);
+      }
+
+      if (nephrologySchedule[selectedDateStr]) {
+        const item = nephrologySchedule[selectedDateStr];
+        activeAcademicNotes.push({
+          icon: "fa-disease",
+          colorClass: "blue",
+          title: `🫘 Nefrologiya Dərsi Hazırlığı (${item.slides} Slayd)`,
+          desc: `Gələn həftəki dərs üçün bu Şənbə günü Nefrologiya fənnindən ${item.slides} slayd nəzərdən keçirilməlidir. (${item.note})`
+        });
+        eveningStudyTasksList.push(`Nefrologiya (${item.slides} slayd oxu)`);
+      }
+
+      if (rheumatologySchedule[selectedDateStr]) {
+        const item = rheumatologySchedule[selectedDateStr];
+        activeAcademicNotes.push({
+          icon: "fa-bone",
+          colorClass: "purple",
+          title: `🦴 Revmatologiya Dərsi Hazırlığı (${item.pages} Səhifə)`,
+          desc: `Sabahkı dərs üçün bu axşam xüsusi olaraq Revmatologiya fənnindən ${item.pages} səhifə oxumalısınız. (${item.note})`
+        });
+        eveningStudyTasksList.push(`Revmatologiya (${item.pages} səhifə oxu)`);
+      }
+
+      if (coloproctologySchedule[selectedDateStr]) {
+        const item = coloproctologySchedule[selectedDateStr];
+        activeAcademicNotes.push({
+          icon: "fa-stethoscope",
+          colorClass: "rose",
+          title: `🩺 Koloproktologiya Dərsi Hazırlığı (${item.pages} Səhifə)`,
+          desc: `Cümə axşamı dərsi üçün bu Bazar günü xüsusi olaraq Koloproktologiya fənnindən ${item.pages} səhifə oxumalısınız. (${item.note})`
+        });
+      }
+
+      // Render Academic Cards
+      if (activeAcademicNotes.length > 0) {
+        let cardsHtml = "";
+        activeAcademicNotes.forEach(note => {
+          cardsHtml += `
+            <div class="bg-${note.colorClass}-50 border-l-4 border-${note.colorClass}-500 p-4 rounded-xl shadow-sm flex items-start gap-3">
+              <i class="fa-solid ${note.icon} text-${note.colorClass}-600 text-lg mt-0.5"></i>
+              <div>
+                <h4 class="font-bold text-${note.colorClass}-900 text-sm">${note.title}</h4>
+                <p class="text-xs text-${note.colorClass}-800 mt-1 leading-relaxed">${note.desc}</p>
+              </div>
+            </div>
+          `;
+        });
+        academicContainer.innerHTML = cardsHtml;
+      } else {
+        academicContainer.innerHTML = "";
+      }
+
+      // Generate Blocks
+      let blocks = [];
+
+      if (!isWeekend) {
+        // Weekday Routine
+        const weekdayHomeTaskShowerLabel = hasGym
+          ? "Zehni rahatlaşma və şam yeməyinə hazırlıq (Duş yalnız məşqdən sonra alınacaq)"
+          : "Günün yorğunluğunu atmaq üçün rahatlaşdırıcı duş qəbulu";
+
+        blocks = [
+          {
+            time: "07:15 – 08:00",
+            title: "🌅 Səhər Rutini & Yola Düşmə",
+            icon: "fa-sun text-amber-500",
+            bg: "bg-amber-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_w1`, label: "Oyanış, dişlərin fırçalanması və səhər gigiyenası" },
+              { id: `${selectedDateStr}_w2`, label: "Geyinmə və sürətli səhər qəlyanaltısı" },
+              { id: `${selectedDateStr}_w3`, label: "Universitetə / Staja yola düşmə" }
+            ]
+          },
+          {
+            time: "08:00 – 16:00",
+            title: "🏫 Universitet / Staj Zamanı",
+            icon: "fa-hospital-user text-blue-500",
+            bg: "bg-blue-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_u1`, label: "Stajlar və mühazirələrdə iştirak" },
+              { id: `${selectedDateStr}_u2`, label: "Səs-küylü aralarda: Xülasə cədvəllərə rahat baxış" }
+            ]
+          },
+          {
+            time: "16:30 – 18:00",
+            title: "🍳 Evə Qayıdış & Yemək Zonası",
+            icon: "fa-house-user text-emerald-500",
+            bg: "bg-emerald-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_h1`, label: "Evə çatış (16:30)" },
+              { id: `${selectedDateStr}_h2`, label: weekdayHomeTaskShowerLabel },
+              { id: `${selectedDateStr}_h3`, label: "Yemək bişirmək və şam yeməyi" }
+            ]
+          }
+        ];
+
+        let studyTaskLabel = "TUS Nəzəriyyə Oxusu (Mövzunu anlamaq)";
+        if (eveningStudyTasksList.length > 0) {
+          studyTaskLabel = "Universitet Dərs Oxusu: " + eveningStudyTasksList.join(" + ");
+        }
+
+        if (hasGym) {
+          blocks.push({
+            time: "18:00 – 23:30",
+            title: "🏋️‍♂️ İdman & Dərin Oxu Bloku (2 Saat İdman + 2 Saat Oxu + 1.5 Saat İngilis Dili)",
+            icon: "fa-dumbbell text-orange-500",
+            bg: "bg-orange-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_g1`, label: "18:00 – 20:00: İdman / Gym məşqi (2 saat)" },
+              { id: `${selectedDateStr}_g2`, label: "20:00 – 20:30: Evə gəliş, MƏŞQDƏN SONRA DUŞ QƏBULU və bərpa" },
+              { id: `${selectedDateStr}_g3`, label: `20:30 – 22:30: ${studyTaskLabel} (2 saat dərin oxu)` },
+              { id: `${selectedDateStr}_g4`, label: "22:30 – 23:30: İngilis dili öyrənmə və təcrübə (1 saat 30 dəqiqə)" }
+            ]
+          });
+
+          blocks.push({
+            time: "23:30 – 00:00",
+            title: "🌙 Yuxuya Hazırlıq Rutini",
+            icon: "fa-moon text-purple-500",
+            bg: "bg-purple-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_n1`, label: "Dişlərin fırçalanması, axşam gigiyenası, ekranları söndürmək" },
+              { id: `${selectedDateStr}_n2`, label: "00:00: Yuxu" }
+            ]
+          });
+        } else {
+          blocks.push({
+            time: "18:00 – 23:30",
+            title: "🧠 Dərin Nəzəriyyə & İngilis Dili Bloku (İdmansız Gün)",
+            icon: "fa-brain text-indigo-500",
+            bg: "bg-indigo-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_s1`, label: `18:00 – 20:00: ${studyTaskLabel} (2 saat dərin oxu)` },
+              { id: `${selectedDateStr}_s2`, label: "20:00 – 21:30: İngilis dili öyrənmə seansı (1 saat 30 dəqiqə)" },
+              { id: `${selectedDateStr}_s3`, label: "21:30 – 23:30: Sərbəst dincəlmə və hobbi" }
+            ]
+          });
+
+          blocks.push({
+            time: "23:30 – 00:00",
+            title: "🌙 İstirahət & Yuxuya Hazırlıq",
+            icon: "fa-moon text-purple-500",
+            bg: "bg-purple-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_n1`, label: "Dişlərin fırçalanması, axşam gigiyenası, ekranları söndürmək" },
+              { id: `${selectedDateStr}_n2`, label: "00:00: Yuxu" }
+            ]
+          });
+        }
+
+      } else {
+        // Weekend Routine
+        let weekendStudyLabel = "10:00 – 12:30: TUS əsas nəzəriyyə oxusu (2.5 saat)";
+        if (coloproctologySchedule[selectedDateStr]) {
+          const coloItem = coloproctologySchedule[selectedDateStr];
+          weekendStudyLabel = `10:00 – 12:30: Koloproktologiya (${coloItem.pages} səhifə oxu) + TUS nəzəriyyəsi`;
+        } else if (nephrologySchedule[selectedDateStr]) {
+          const nephItem = nephrologySchedule[selectedDateStr];
+          weekendStudyLabel = `10:00 – 12:30: Nefrologiya (${nephItem.slides} slayd oxu)`;
+        }
+
+        const weekendNightShowerTask = hasGym
+          ? "23:30: Axşam gigiyenası və dişlərin fırçalanması (Duş məşqdən sonra alındı)"
+          : "23:30: Axşam gigiyenası, duş qəbulu və dişlərin fırçalanması";
+
+        blocks = [
+          {
+            time: "08:30 – 12:30",
+            title: "🌅 Səhər Oyanış & Səhər Dərsi Bloku",
+            icon: "fa-coffee text-amber-500",
+            bg: "bg-amber-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_we1`, label: "08:30 – 09:00: Oyanış və dişlərin fırçalanması" },
+              { id: `${selectedDateStr}_we2`, label: weekendStudyLabel }
+            ]
+          },
+          {
+            time: "14:30 – 17:00",
+            title: "📚 Günortadan Sonra Bloku (Dərin Nəzəriyyə Oxusu)",
+            icon: "fa-book-open text-teal-500",
+            bg: "bg-teal-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_we3`, label: "14:30 – 17:00: TUS Nəzəriyyə oxusu və məntiqini anlamaq (2.5 saat)" }
+            ]
+          },
+          {
+            time: "17:00 – 18:30",
+            title: "🇬🇧 İngilis Dili Seansı (1.5 Saat)",
+            icon: "fa-language text-indigo-500",
+            bg: "bg-indigo-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_weeng`, label: "17:00 – 18:30: İngilis dili öyrənmə və təcrübə (1 saat 30 dəqiqə)" }
+            ]
+          }
+        ];
+
+        if (hasGym) {
+          blocks.push({
+            time: "17:00 – 19:00",
+            title: "🏋️‍♂️ İdman Seansı (2 Saat)",
+            icon: "fa-dumbbell text-orange-500",
+            bg: "bg-orange-50/50",
+            tasks: [
+              { id: `${selectedDateStr}_wegym`, label: "İdman / Gym məşqi (2 saat) + MƏŞQDƏN SONRA DUŞ QƏBULU" }
+            ]
+          });
+        }
+
+        blocks.push({
+          time: "19:00 – 00:00",
+          title: "🌙 Axşam Sərbəst Zaman & Gecə Rutini",
+          icon: "fa-moon text-purple-500",
+          bg: "bg-purple-50/50",
+          tasks: [
+            { id: `${selectedDateStr}_wenight`, label: "Tamamilə azad zaman, sosial həyat" },
+            { id: `${selectedDateStr}_wenight2`, label: weekendNightShowerTask },
+            { id: `${selectedDateStr}_wenight3`, label: "00:00: Yuxu" }
+          ]
+        });
+      }
+
+      // Render tasks HTML and calculate completion
+      let totalTasks = 0;
+      let completedTasks = 0;
+      let html = "";
+
+      blocks.forEach(block => {
+        let blockTasksHtml = "";
+
+        block.tasks.forEach(t => {
+          totalTasks++;
+          const isDone = !!userTasksState[t.id];
+          if (isDone) completedTasks++;
+
+          blockTasksHtml += `
+            <div onclick="toggleTask('${t.id}')" class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/80 cursor-pointer transition border border-transparent hover:border-slate-200/60 ${isDone ? 'opacity-60 line-through' : ''}">
+              <div class="mt-0.5 w-5 h-5 rounded-md border ${isDone ? 'bg-teal-600 border-teal-600 text-white' : 'border-slate-300 bg-white'} flex items-center justify-center transition">
+                ${isDone ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+              </div>
+              <span class="text-sm font-medium text-slate-700 leading-snug">${t.label}</span>
+            </div>
+          `;
+        });
+
+        html += `
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <div class="px-5 py-3.5 ${block.bg} border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
+                <i class="fa-solid ${block.icon}"></i>
+                <span>${block.title}</span>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 bg-white/80 text-slate-600 rounded-lg border border-slate-200/60">
+                ${block.time}
+              </span>
+            </div>
+            <div class="p-3 space-y-1">
+              ${blockTasksHtml}
+            </div>
+          </div>
+        `;
+      });
+
+      tasksContainer.innerHTML = html;
+
+      // Update progress ring
+      const percent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+      completionText.textContent = `${percent}%`;
+      
+      const circumference = 113; // 2 * PI * 18
+      const offset = circumference - (percent / 100) * circumference;
+      progressCircle.style.strokeDashoffset = offset;
+    }
+  </script>
+</body>
+</html>
